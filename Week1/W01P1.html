@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <canvas id="c" width="512" height="512" />
+    <script type="text/javascript">
+      var canvas = document.getElementById("c");
+      var gl = canvas.getContext("webgl");
+      gl.clearColor(0.3921, 0.5843, 0.9294, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+    </script>
+    <script src="../angelCommon/webgl-utils.js" type="text/javascript"></script>
+    <script src="../angelCommon/initShaders.js" type="text/javascript"></script>
+    <script src="../angelCommon/MV.js" type="text/javascript"></script>
+    <script src="W01P1.js" type="text/javascript"></script>
+  </body>
+</html>
