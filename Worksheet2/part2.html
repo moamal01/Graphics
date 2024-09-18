@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+      attribute vec4 a_Position;
+      attribute vec4 a_Color;
+      varying vec4 v_Color;
+      void main() {
+        v_Color = a_Color;
+        gl_Position = a_Position;
+        gl_PointSize = 5.0;
+      }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+      precision mediump float;
+      varying vec4 v_Color;
+      void main() {
+        gl_FragColor = v_Color;
+      }
+    </script>
+
+    <script src="../angelCommon/webgl-utils.js" type="text/javascript"></script>
+    <script src="../angelCommon/initShaders.js" type="text/javascript"></script>
+    <script src="../angelCommon/MV.js" type="text/javascript"></script>
+    <script src="part2.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <canvas id="c" width="512" height="512"></canvas>
+    <select id="colorMenu" size="8">
+      <option value="0" selected>Black</option>
+      <option value="1">Red</option>
+      <option value="2">Green</option>
+      <option value="3">Blue</option>
+      <option value="4">Yellow</option>
+      <option value="5">Orange</option>
+      <option value="6">Purple</option>
+      <option value="7">Cyan</option>
+      <option value="8">White</option>
+      <option value="9">Cornflower</option>
+    </select>
+    <select id="clearMenu" size="1">
+      <option value="0" selected>Black</option>
+      <option value="1" selected>Red</option>
+      <option value="2" selected>Green</option>
+      <option value="3" selected>Blue</option>
+      <option value="4" selected>Yellow</option>
+      <option value="5" selected>Orange</option>
+      <option value="6" selected>Purple</option>
+      <option value="7" selected>Cyan</option>
+      <option value="8" selected>White</option>
+      <option value="9" selected>Cornflower</option>
+    </select>
+    <button id="clearButton">Clear canvas</button>
+  </body>
+</html>
