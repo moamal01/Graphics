@@ -27,6 +27,9 @@ window.onload = function init() {
   var triangleMode = document.getElementById("triangleMode");
 
   var drawingMode = "points";
+  var trianglePoints = [];
+  var triangleColors = [];
+  var pointCounter = 0;
   var max_verts = 1000;
   var index = 0;
   var numPoints = 0;
@@ -106,6 +109,65 @@ window.onload = function init() {
       index += 6;
       window.requestAnimationFrame(render, canvas);
     } else {
+      if (pointCounter < 2) {
+        let points_array = [];
+        trianglePoints.push(mousepos);
+        triangleColors.push(colors[colorMenu.selectedIndex]);
+        pointCounter++;
+
+        add_point(points_array, mousepos, 0.03);
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec2"],
+          flatten(points_array)
+        );
+
+        let colorArray = [];
+        for (let i = 0; i < 6; i++) {
+          colorArray.push(colors[colorMenu.selectedIndex]);
+        }
+        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec4"],
+          flatten(colorArray)
+        );
+        numPoints += 6;
+        index += 6;
+        window.requestAnimationFrame(render, canvas);
+      } else {
+        let points_array = [];
+        trianglePoints.push(mousepos);
+        triangleColors.push(colors[colorMenu.selectedIndex]);
+        index -= 12;
+        numPoints -= 12;
+
+        add_point(points_array, mousepos, 0.03);
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec2"],
+          flatten(trianglePoints)
+        );
+
+        let colorArray = [];
+        for (let i = 0; i < 6; i++) {
+          colorArray.push(colors[colorMenu.selectedIndex]);
+        }
+        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec4"],
+          flatten(triangleColors)
+        );
+        numPoints += 3;
+        index += 3;
+        trianglePoints = [];
+        triangleColors = [];
+        pointCounter = 0;
+        window.requestAnimationFrame(render, canvas);
+      }
     }
   });
 
