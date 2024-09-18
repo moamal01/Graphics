@@ -23,8 +23,11 @@ window.onload = function init() {
   var clearMenu = document.getElementById("clearMenu");
   var clearButton = document.getElementById("clearButton");
   var colorMenu = document.getElementById("colorMenu");
+  var pointMode = document.getElementById("pointMode");
+  var triangleMode = document.getElementById("triangleMode");
 
-  var max_verts = 50;
+  var drawingMode = "points";
+  var max_verts = 1000;
   var index = 0;
   var numPoints = 0;
   var colors = [
@@ -58,7 +61,20 @@ window.onload = function init() {
   gl.vertexAttribPointer(color, 4, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(color);
 
-  // Click listener
+  // Draw
+  function add_point(array, point, size) {
+    const offset = size / 2;
+    var point_coords = [
+      vec2(point[0] - offset, point[1] - offset),
+      vec2(point[0] + offset, point[1] - offset),
+      vec2(point[0] - offset, point[1] + offset),
+      vec2(point[0] - offset, point[1] + offset),
+      vec2(point[0] + offset, point[1] - offset),
+      vec2(point[0] + offset, point[1] + offset),
+    ];
+    array.push.apply(array, point_coords);
+  }
+
   canvas.addEventListener("click", function (ev) {
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     var bbox = ev.target.getBoundingClientRect();
@@ -66,22 +82,34 @@ window.onload = function init() {
       (2 * (ev.clientX - bbox.left)) / canvas.width - 1,
       (2 * (canvas.height - ev.clientY + bbox.top - 1)) / canvas.height - 1
     );
-    gl.bufferSubData(
-      gl.ARRAY_BUFFER,
-      index * sizeof["vec2"],
-      flatten(mousepos)
-    );
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferSubData(
-      gl.ARRAY_BUFFER,
-      index * sizeof["vec4"],
-      flatten(colors[colorMenu.selectedIndex])
-    );
-    numPoints = Math.max(numPoints, ++index);
-    index %= max_verts;
-    window.requestAnimationFrame(render, canvas);
+    if (drawingMode == "points") {
+      let points_array = [];
+      add_point(points_array, mousepos, 0.03);
+      gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+      gl.bufferSubData(
+        gl.ARRAY_BUFFER,
+        index * sizeof["vec2"],
+        flatten(points_array)
+      );
+
+      let colorArray = [];
+      for (let i = 0; i < 6; i++) {
+        colorArray.push(colors[colorMenu.selectedIndex]);
+      }
+      gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+      gl.bufferSubData(
+        gl.ARRAY_BUFFER,
+        index * sizeof["vec4"],
+        flatten(colorArray)
+      );
+      numPoints += 6;
+      index += 6;
+      window.requestAnimationFrame(render, canvas);
+    } else {
+    }
   });
 
+  // Clear button
   clearButton.addEventListener("click", function () {
     clear_index = clearMenu.selectedIndex;
     var bgcolor = colors[clearMenu.selectedIndex];
@@ -91,9 +119,17 @@ window.onload = function init() {
     window.requestAnimationFrame(render, canvas);
   });
 
+  // Mode buttons
+  pointMode.addEventListener("click", function () {
+    drawingMode = "points";
+  });
+  triangleMode.addEventListener("click", function () {
+    drawingMode = "triangles";
+  });
+
   function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.POINTS, 0, numPoints);
+    gl.drawArrays(gl.TRIANGLES, 0, numPoints);
   }
 
   render();
