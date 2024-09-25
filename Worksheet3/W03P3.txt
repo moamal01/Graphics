@@ -33,6 +33,6 @@ The model itself is a matrix product of desired transformations. If no transform
    	var t = translate(-2.0, -2.0, 0.0);
    	var M = mult(R, t);
 
-	Since the rotation consists of euler angles in matrix form, the order of the multiplication can yield different a R.
+	Since the rotation consists of Euler angles in matrix form, the order of the multiplication can yield different a R.
 
 	

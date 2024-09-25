@@ -85,19 +85,19 @@ window.onload = function init() {
   var PLoc = gl.getUniformLocation(program, "p_matrix");
   gl.uniformMatrix4fv(PLoc, false, flatten(P));
 
-  var PLoc = gl.getUniformLocation(program, "m_matrix");
+  var MLoc = gl.getUniformLocation(program, "m_matrix");
 
   function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Identity model
     var M = mat4();
-    gl.uniformMatrix4fv(PLoc, false, flatten(M));
+    gl.uniformMatrix4fv(MLoc, false, flatten(M));
     gl.drawElements(gl.LINES, wire_indices.length, gl.UNSIGNED_INT, 0);
 
     // translated model
     M = translate(2.0, 2.0, 0.0);
-    gl.uniformMatrix4fv(PLoc, false, flatten(M));
+    gl.uniformMatrix4fv(MLoc, false, flatten(M));
     gl.drawElements(gl.LINES, wire_indices.length, gl.UNSIGNED_INT, 0);
 
     // rotated and translated model
@@ -111,7 +111,7 @@ window.onload = function init() {
     var Rt = mult(R, t);
 
     M = Rt;
-    gl.uniformMatrix4fv(PLoc, false, flatten(M));
+    gl.uniformMatrix4fv(MLoc, false, flatten(M));
     gl.drawElements(gl.LINES, wire_indices.length, gl.UNSIGNED_INT, 0);
   };
 
