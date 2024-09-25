@@ -25,11 +25,19 @@ window.onload = function init() {
   var colorMenu = document.getElementById("colorMenu");
   var pointMode = document.getElementById("pointMode");
   var triangleMode = document.getElementById("triangleMode");
+  var circleMode = document.getElementById("circleMode");
 
+  // Variables
   var drawingMode = "points";
   var trianglePoints = [];
   var triangleColors = [];
-  var pointCounter = 0;
+  var triangleCounter = 0;
+
+  var circlePoints = [];
+  var circleColors = [];
+  var circleCounter = 0;
+  var numberOfSides = 100;
+
   var max_verts = 1000;
   var index = 0;
   var numPoints = 0;
@@ -109,14 +117,15 @@ window.onload = function init() {
       numPoints += 6;
       index += 6;
       window.requestAnimationFrame(render, canvas);
-    } else {
-      if (pointCounter < 2) {
+    } else if (drawingMode == "triangles") {
+      if (triangleCounter < 2) {
         let points_array = [];
+        add_point(points_array, mousepos, 0.03);
+
         trianglePoints.push(mousepos);
         triangleColors.push(colors[colorMenu.selectedIndex]);
-        pointCounter++;
+        triangleCounter++;
 
-        add_point(points_array, mousepos, 0.03);
         gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
         gl.bufferSubData(
           gl.ARRAY_BUFFER,
@@ -128,23 +137,26 @@ window.onload = function init() {
         for (let i = 0; i < 6; i++) {
           colorArray.push(colors[colorMenu.selectedIndex]);
         }
+
         gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
         gl.bufferSubData(
           gl.ARRAY_BUFFER,
           index * sizeof["vec4"],
           flatten(colorArray)
         );
+
         numPoints += 6;
         index += 6;
         window.requestAnimationFrame(render, canvas);
       } else {
         let points_array = [];
+        add_point(points_array, mousepos, 0.03);
+
         trianglePoints.push(mousepos);
         triangleColors.push(colors[colorMenu.selectedIndex]);
         index -= 12;
         numPoints -= 12;
 
-        add_point(points_array, mousepos, 0.03);
         gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
         gl.bufferSubData(
           gl.ARRAY_BUFFER,
@@ -152,22 +164,93 @@ window.onload = function init() {
           flatten(trianglePoints)
         );
 
-        let colorArray = [];
-        for (let i = 0; i < 6; i++) {
-          colorArray.push(colors[colorMenu.selectedIndex]);
-        }
         gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
         gl.bufferSubData(
           gl.ARRAY_BUFFER,
           index * sizeof["vec4"],
           flatten(triangleColors)
         );
+
         numPoints += 3;
         index += 3;
         trianglePoints = [];
         triangleColors = [];
-        pointCounter = 0;
+        triangleCounter = 0;
         window.requestAnimationFrame(render, canvas);
+      }
+    } else {
+      // Circle
+      if (circleCounter < 1) {
+        let points_array = [];
+        add_point(points_array, mousepos, 0.04);
+        circlePoints.push(mousepos);
+        circleColors.push(colors[colorMenu.selectedIndex]);
+        circleCounter++;
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec2"],
+          flatten(points_array)
+        );
+        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        let sameColors = [];
+        for (let i = 0; i < 6; i++) {
+          sameColors.push(colors[colorMenu.selectedIndex]);
+        }
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec4"],
+          flatten(sameColors)
+        );
+        index += 6;
+        numPoints += 6;
+        window.requestAnimationFrame(render, canvas);
+      } else {
+        let points_array = [];
+        add_point(points_array, mousepos, 0.03);
+
+        circlePoints.push(mousepos);
+        circleColors.push(colors[colorMenu.selectedIndex]);
+        index -= 6;
+        numPoints -= 6;
+
+        var center = circlePoints[0];
+        var vecBetweenPoints = vec2(
+          mousepos[0] - center[0],
+          mousepos[1] - center[1]
+        );
+        var radius = length(vecBetweenPoints);
+        for (var i = 0; i <= numberOfSides; i++) {
+          var point = vec2(
+            radius * Math.cos((2 * Math.PI * i) / numberOfSides),
+            radius * Math.sin((2 * Math.PI * i) / numberOfSides)
+          );
+          circlePoints.push(point);
+          circlePoints.push(circlePoints[0]);
+          circlePoints.push(point);
+          circleColors.push(colors[colorMenu.selectedIndex]);
+          circleColors.push(circleColors[0]);
+          circleColors.push(colors[colorMenu.selectedIndex]);
+        }
+        circlePoints.pop();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec2"],
+          flatten(circlePoints)
+        );
+        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          index * sizeof["vec4"],
+          flatten(circleColors)
+        );
+        index += 3 * (i - 1);
+        numPoints += 3 * (i - 1);
+        circlePoints = [];
+        circleColors = [];
+        circleCounter = 0;
       }
     }
   });
@@ -188,6 +271,9 @@ window.onload = function init() {
   });
   triangleMode.addEventListener("click", function () {
     drawingMode = "triangles";
+  });
+  circleMode.addEventListener("click", function () {
+    drawingMode = "circles";
   });
 
   function render() {
