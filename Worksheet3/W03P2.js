@@ -72,7 +72,7 @@ window.onload = function init() {
   gl.enableVertexAttribArray(color);
 
   // Camera extrinsics
-  var eye = vec3(0.5, 0.5, 5);
+  var eye = vec3(0.5, 0.5, 10);
   var at = vec3(0.5, 0.5, 0);
   var up = vec3(1, 0, 0);
 
@@ -96,18 +96,18 @@ window.onload = function init() {
     gl.drawElements(gl.LINES, wire_indices.length, gl.UNSIGNED_INT, 0);
 
     // translated model
-    M = translate(1.0, 1.0, 0.0);
+    M = translate(2.0, 2.0, 0.0);
     gl.uniformMatrix4fv(PLoc, false, flatten(M));
     gl.drawElements(gl.LINES, wire_indices.length, gl.UNSIGNED_INT, 0);
 
     // rotated and translated model
-    var angle = 30.0;
+    var angle = 60.0;
     var Rx = rotateX(angle);
     var Ry = rotateY(angle);
     var Rz = rotateZ(angle);
 
     var R = mult(mult(Rx, Ry), Rz);
-    var t = translate(-1.0, -1.0, 0.0);
+    var t = translate(-2.0, -2.0, 0.0);
     var Rt = mult(R, t);
 
     M = Rt;

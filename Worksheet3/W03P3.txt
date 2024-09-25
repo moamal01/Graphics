@@ -1,0 +1,38 @@
+In part 1, no transformation was used. I use a view matrix, which is multiplied by the vertex positions. 
+
+Part 2 consisted of drawing the cube with three different affine transformations.
+
+The affine transformation consists of a view matrix, model, and projection matrix. These are abbreviated MVP but their ordering is reversed in the vertex shader. These are finally multiplied by the original vertex positions.
+
+gl_Position = p_matrix * view * m_matrix * a_Position;
+
+The model itself is a matrix product of desired transformations. If no transformation is desired, this matrix can be set to the identity matrix.
+
+	1.	First cube:
+	The first cube was viewed head-on, with the camera position at 0, 0, 10. This makes the cube look like a square. This means the affine transformation was just the identity matrix.
+
+	The model matrix: 
+	M = mat4();
+
+	2.	Second cube:
+	The second cube was translated by 2, 2, 0. Now, the cube is viewed from an angle, causing it to have two vanishing points. 
+
+	The model matrix: 
+	M = translate(2.0, 2.0, 0.0);
+
+	3.	Third cube:
+	The third cube was translated by -2, -2, 0. Now the cube also has a rotation, making it have three vanishing points.
+
+	The model matrix matrix:
+	var angle = 60.0;
+    	var Rx = rotateX(angle);
+    	var Ry = rotateY(angle);
+   	var Rz = rotateZ(angle);
+
+   	var R = mult(mult(Rx, Ry), Rz);
+   	var t = translate(-2.0, -2.0, 0.0);
+   	var M = mult(R, t);
+
+	Since the rotation consists of euler angles in matrix form, the order of the multiplication can yield different a R.
+
+	
