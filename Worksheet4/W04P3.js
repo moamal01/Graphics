@@ -10,6 +10,7 @@ var pointsArray = [];
 var colors = [];
 var numTimesToSubdivide = 1;
 var index = 0;
+var theta = 0.0;
 
 // Original tetrahedron
 const va = vec4(0.0, 0.0, 1.0, 1);
@@ -144,29 +145,33 @@ window.onload = function init() {
     }
   });
 
-  // Camera extrinsics
-  var eye = vec3(0.0, 0.0, 7);
-  var at = vec3(0.0, 0.0, 0);
-  var up = vec3(1, 0, 0);
-
-  var V = lookAt(eye, at, up);
-  var VLoc = gl.getUniformLocation(program, "view");
-  gl.uniformMatrix4fv(VLoc, false, flatten(V));
-
-  // Projection matrix
-  var P = perspective(45, canvas.width / canvas.height, 0.1, 100);
-  var PLoc = gl.getUniformLocation(program, "p_matrix");
-  gl.uniformMatrix4fv(PLoc, false, flatten(P));
-
-  var MLoc = gl.getUniformLocation(program, "m_matrix");
-
   function render() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // Camera extrinsics
+    const radius = 7.0;
+    theta += 0.01;
+    var eye = vec3(radius * Math.sin(theta), 0.0, radius * Math.cos(theta));
+    var at = vec3(0.0, 0.0, 0.0);
+    var up = vec3(0, 1, 0);
+
+    var V = lookAt(eye, at, up);
+    var VLoc = gl.getUniformLocation(program, "view");
+    gl.uniformMatrix4fv(VLoc, false, flatten(V));
+
+    // Projection matrix
+    var P = perspective(45, canvas.width / canvas.height, 0.1, 100);
+    var PLoc = gl.getUniformLocation(program, "p_matrix");
+    gl.uniformMatrix4fv(PLoc, false, flatten(P));
+
+    var MLoc = gl.getUniformLocation(program, "m_matrix");
 
     // Identity model
     var M = mat4();
     gl.uniformMatrix4fv(MLoc, false, flatten(M));
     gl.drawArrays(gl.TRIANGLES, 0, pointsArray.length);
+
+    requestAnimFrame(render);
   };
 
   render()
