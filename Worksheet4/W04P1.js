@@ -8,7 +8,7 @@ function setupWebGL(canvas) {
 
 var pointsArray = [];
 var colors = [];
-var numTimesToSubdivide = 8;
+var numTimesToSubdivide = 1;
 var index = 0;
 
 // Original tetrahedron
@@ -26,10 +26,11 @@ window.onload = function init() {
 
   gl.clearColor(0.3921, 0.5843, 0.9294, 1.0);
 
-    // Tetrahedron function
-  // function makeSphere() {
-    
-  // }
+  // Buttons
+  var increaseSubDivs = document.getElementById("+");
+  var decreaseSubDivs = document.getElementById("-");
+
+  // Initial "Sphere"
   tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
 
   // Program
@@ -85,6 +86,49 @@ window.onload = function init() {
     colors.push(vec4(0.0, 0.0, 0.0, 1.0));
     colors.push(vec4(0.0, 0.0, 0.0, 1.0));
   }
+
+  // Button actions
+  increaseSubDivs.addEventListener("click", function () {
+    gl.vBuffer = null;
+
+    if (numTimesToSubdivide > 8) {
+      console.log("Too many subdivisions");
+    } else {
+      numTimesToSubdivide++;
+      tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+  
+      // Rebind the buffers and upload the updated data
+      gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW);
+      
+      gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+  
+      render();
+    }
+  });
+
+  decreaseSubDivs.addEventListener("click", function () {
+    pointsArray = [];
+    colors = [];
+    gl.vBuffer = null;
+
+    if (numTimesToSubdivide < 2) {
+      console.log("Too few subdivisions");
+    } else {
+      numTimesToSubdivide--;
+      tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+  
+      // Rebind the buffers and upload the updated data
+      gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW);
+      
+      gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+  
+      render();
+    }
+  });
 
   // Camera extrinsics
   var eye = vec3(0.5, 0.5, 10);
