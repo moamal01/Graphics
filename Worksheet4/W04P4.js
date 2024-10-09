@@ -42,10 +42,10 @@ window.onload = function init() {
 
   // light and material parameters
   var l_e = vec4(0.0, 0.0, -1.0, 0.0);
-  var l_d = vec3(0.5, 0.5, 0.5);
+  var l_d = vec3(1.0, 1.0, 1.0);
   var l_a = vec3(0.2, 0.2, 0.2);
-  var ks = vec3(0.5, 0.5, 0.5);
-  var s = 10.0; 
+  var ks = vec3(0.2, 0.2, 0.2);
+  var s = 40.0; 
 
   gl.uniform4fv(gl.getUniformLocation(program, "l_e"), flatten(l_e));
   gl.uniform3fv(gl.getUniformLocation(program, "l_d"), flatten(l_d));
